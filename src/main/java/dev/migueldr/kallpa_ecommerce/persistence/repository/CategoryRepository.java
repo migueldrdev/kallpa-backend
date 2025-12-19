@@ -1,6 +1,6 @@
-package dev.migueldr.kallpa_ecommerce.repository;
+package dev.migueldr.kallpa_ecommerce.persistence.repository;
 
-import dev.migueldr.kallpa_ecommerce.persistence.CategoryEntity;
+import dev.migueldr.kallpa_ecommerce.persistence.entity.CategoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

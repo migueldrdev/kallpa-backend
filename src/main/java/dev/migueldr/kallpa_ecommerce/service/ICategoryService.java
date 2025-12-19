@@ -1,6 +1,6 @@
 package dev.migueldr.kallpa_ecommerce.service;
 
-import  dev.migueldr.kallpa_ecommerce.persistence.CategoryEntity ;
+import dev.migueldr.kallpa_ecommerce.persistence.entity.CategoryEntity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

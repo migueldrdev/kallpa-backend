@@ -1,7 +1,7 @@
 package dev.migueldr.kallpa_ecommerce.service;
 
-import dev.migueldr.kallpa_ecommerce.persistence.CategoryEntity;
-import dev.migueldr.kallpa_ecommerce.repository.CategoryRepository;
+import dev.migueldr.kallpa_ecommerce.persistence.entity.CategoryEntity;
+import dev.migueldr.kallpa_ecommerce.persistence.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,9 @@
-package dev.migueldr.kallpa_ecommerce.persistence;
+package dev.migueldr.kallpa_ecommerce.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator; // Nota: En Hibernate 6 ha cambiado un poco, ver abajo
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,6 +19,8 @@ public class CategoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) // Nuevo estándar en Spring Boot 3 / Hibernate 6
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    @JdbcTypeCode(SqlTypes.UUID)
     private UUID id;
 
     @Column(nullable = false)
