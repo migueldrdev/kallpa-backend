@@ -4,6 +4,7 @@ import dev.migueldr.kallpa_ecommerce.business.dto.ProductDto;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.ProductEntity;
 import dev.migueldr.kallpa_ecommerce.persistence.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 public class ProductService {
     private final ProductRepository productRepository;
 
+    /*
     @Transactional(readOnly = true) // Optimiza el rendimiento para solo lectura
     public List<ProductDto> findAllProducts() {
         List<ProductEntity> entities = productRepository.findAll();
@@ -26,6 +28,15 @@ public class ProductService {
         return entities.stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+    */
+
+    @Transactional(readOnly = true)
+    public Page<ProductDto> findAllProducts(Pageable pageable) {
+        Page<ProductEntity> entities = productRepository.findAll(pageable);
+
+        // Convertimos de Entity -> DTO usando map de Page
+        return entities.map(this::mapToDto);
     }
 
     @Transactional(readOnly = true)
@@ -36,6 +47,7 @@ public class ProductService {
         return mapToDto(entity);
     }
 
+    /*
     @Transactional(readOnly = true)
     public List<ProductDto> searchProductsByName(String name) {
         List<ProductEntity> entities = productRepository.findByNameContainingIgnoreCase(name);
@@ -43,6 +55,14 @@ public class ProductService {
         return entities.stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+    */
+
+    @Transactional(readOnly = true)
+    public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {
+        Page<ProductEntity> entities = productRepository.findByNameContainingIgnoreCase(name, pageable);
+
+        return entities.map(this::mapToDto);
     }
 
     // Mapeo manual (Más adelante podemos usar MapStruct)
