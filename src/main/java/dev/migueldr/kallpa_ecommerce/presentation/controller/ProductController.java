@@ -4,9 +4,7 @@ import dev.migueldr.kallpa_ecommerce.business.dto.ProductDto;
 import dev.migueldr.kallpa_ecommerce.business.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +18,15 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         return ResponseEntity.ok(productService.findAllProducts());
+    }
+
+    @GetMapping("/{slug}")
+    public ResponseEntity<ProductDto> getProductBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(productService.findProductBySlug(slug));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDto>> searchProductsByName(@RequestParam("name") String name) {
+        return ResponseEntity.ok(productService.searchProductsByName(name));
     }
 }
