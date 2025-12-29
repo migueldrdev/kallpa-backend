@@ -73,6 +73,7 @@ public class ProductService {
                 entity.getSlug(),
                 entity.getDescription(),
                 entity.getPrice(),
+                entity.getStock(),
                 entity.getImageUrl(),
                 entity.getBrand(),
                 entity.getCategory() != null ? entity.getCategory().getName() : "Sin Categoría"

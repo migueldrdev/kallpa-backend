@@ -37,6 +37,9 @@ public class ProductEntity {
     @Column(nullable = false)
     private BigDecimal price; // Es recomendable usar BigDecimal para precios
 
+    @Column(nullable = false)
+    private Integer stock;
+
     private String imageUrl;
 
     private Boolean active;

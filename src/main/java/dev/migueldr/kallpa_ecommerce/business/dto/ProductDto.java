@@ -10,6 +10,7 @@ public record ProductDto(
         String slug,
         String description,
         BigDecimal price,
+        Integer stock,
         String imageUrl,
         String brand,
         String categoryName // Solo devolvemos el nombre, no el objeto entero
