@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate # IMPORTANTE: 'validate' verifica que Java coincida con la DB, no la borra ni la crea.
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true # Formatea el SQL en la consola para que sea legible
