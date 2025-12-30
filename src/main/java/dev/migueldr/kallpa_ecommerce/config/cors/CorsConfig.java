@@ -1,4 +1,4 @@
-package dev.migueldr.kallpa_ecommerce.config;
+package dev.migueldr.kallpa_ecommerce.config.cors;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
