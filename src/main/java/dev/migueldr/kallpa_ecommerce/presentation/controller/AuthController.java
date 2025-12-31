@@ -1,5 +1,6 @@
 package dev.migueldr.kallpa_ecommerce.presentation.controller;
 
+import dev.migueldr.kallpa_ecommerce.business.dto.LoginRequestDto;
 import dev.migueldr.kallpa_ecommerce.business.dto.RegisterRequestDto;
 import dev.migueldr.kallpa_ecommerce.business.service.AuthService;
 import jakarta.validation.Valid;
@@ -26,5 +27,11 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "message", "Usuario " + userName + " registrado con éxito"
         ));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginRequestDto request) {
+        String token = authService.login(request);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
