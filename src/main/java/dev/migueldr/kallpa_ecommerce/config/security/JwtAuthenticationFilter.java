@@ -71,8 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Dejamos pasar la petición. Como el SecurityContext está vacío,
         // el SecurityConfig rechazará la petición más adelante sin lanzar errores feos.
         filterChain.doFilter(request, response);
-
-        filterChain.doFilter(request, response);
     }
 
 }
