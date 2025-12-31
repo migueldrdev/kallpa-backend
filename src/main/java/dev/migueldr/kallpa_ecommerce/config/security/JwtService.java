@@ -4,8 +4,8 @@ import dev.migueldr.kallpa_ecommerce.persistence.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -17,9 +17,11 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    // CLAVE SECRETA: En producción esto va en variables de entorno.
-    // Debe ser larga y aleatoria (256 bits).
-    private static final String SECRET_KEY = "kallpa_ecommerce_secret_key_super_segura_para_firmar_tokens_jwt_2025";
+    @Value("${kallpa.security.jwt.secret}")
+    private String secretKey;
+
+    @Value("${kallpa.security.jwt.expiration-ms:86400000}")
+    private long jwtExpiration;
 
     public String generateToken(UserEntity user) {
         Map<String, Object> extraClaims = new HashMap<>();
@@ -28,8 +30,10 @@ public class JwtService {
         extraClaims.put("name", user.getFullName());
 
         return Jwts.builder().setClaims(extraClaims).setSubject(user.getEmail()) // El "usuario" principal del token
-                .setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 horas de validez
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) // 24 horas de validez
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     // --- Métodos para validar el token (Los usaremos en la Fase 3) ---
@@ -50,6 +54,6 @@ public class JwtService {
     private Key getSignInKey() {
         // Si usas una clave texto simple, asegúrate que sea larga, si no JJWT fallará
         // Aquí simulamos base64, o usamos Keys.hmacShaKeyFor si es texto plano bytes
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }

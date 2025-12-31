@@ -30,3 +30,9 @@ logging:
         type:
           descriptor:
             sql: TRACE # Muestra los valores reales insertados (? -> 'Zapatilla')
+
+kallpa:
+  security:
+    jwt:
+      secret: ${JWT_SECRET_KEY:M3UihrtC9bGsrruALvtV/R0HH79258jTp+dp8L5ByLE=}
+      expiration-ms: 86400000 # 1 hora en milisegundos

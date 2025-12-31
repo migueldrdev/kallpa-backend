@@ -3,8 +3,11 @@ package dev.migueldr.kallpa_ecommerce.presentation.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -78,5 +81,16 @@ public class ApiExceptionHandler {
         body.put("details", ex.getLocalizedMessage());
         body.put("path", req.getRequestURI());
         return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    public ProblemDetail handleAuthenticationException(Exception ex) {
+        // ProblemDetail es el estándar RFC 7807 para errores en APIs REST (Nativo en Spring Boot 3)
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+
+        problemDetail.setTitle("Error de Autenticación");
+        problemDetail.setProperty("description", "Las credenciales proporcionadas son incorrectas o el usuario no existe");
+
+        return problemDetail;
     }
 }
