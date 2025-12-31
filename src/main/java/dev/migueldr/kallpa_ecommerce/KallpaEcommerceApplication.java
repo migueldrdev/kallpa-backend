@@ -74,7 +74,6 @@ public class KallpaEcommerceApplication {
 						.attributes(Map.of(
 								"color", "Titanio Natural",
 								"almacenamiento", "512GB"
-								// Nota: Puede tener diferentes claves si quisieras
 						))
 						.build();
 				variantRepository.save(variant2);
