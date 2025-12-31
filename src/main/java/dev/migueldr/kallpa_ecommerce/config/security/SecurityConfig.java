@@ -30,6 +30,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(org.springframework.security.config.Customizer.withDefaults()) // <--- IMPORTANTE: Activa el bean CorsFilter
                 .authorizeHttpRequests(auth -> auth
                         // Rutas Públicas (Blanca)
                         .requestMatchers("/api/v1/auth/**").permitAll()
