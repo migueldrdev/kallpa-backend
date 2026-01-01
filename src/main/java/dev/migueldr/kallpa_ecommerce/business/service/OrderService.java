@@ -1,6 +1,7 @@
 package dev.migueldr.kallpa_ecommerce.business.service;
 
 import dev.migueldr.kallpa_ecommerce.business.dto.CreateOrderDto;
+import dev.migueldr.kallpa_ecommerce.business.dto.OrderDto;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.OrderEntity;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.OrderItemEntity;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.ProductEntity;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -71,5 +74,37 @@ public class OrderService {
         OrderEntity savedOrder = orderRepository.save(order);
 
         return savedOrder.getId();
+    }
+
+    public List<OrderDto> getMyOrders() {
+        // 1. Obtener el email del usuario logueado desde el token
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // 2. Buscar sus órdenes
+        List<OrderEntity> orders = orderRepository.findByEmailOrderByCreatedAtDesc(email);
+
+        // 3. Mapear a DTOs
+        return orders.stream()
+                .map(this::mapToOrderDto)
+                .toList();
+    }
+
+    // Método auxiliar para mapear OrderEntity a OrderDto
+    private OrderDto mapToOrderDto(OrderEntity order) {
+        List<OrderDto.OrderItemDto> items = order.getItems().stream()
+                .map(item -> new OrderDto.OrderItemDto(
+                        item.getProduct().getId(),
+                        item.getProduct().getName(),
+                        item.getQuantity(),
+                        item.getPrice()
+                )).toList();
+        return new OrderDto(
+                order.getCustomerName(),
+                order.getEmail(),
+                order.getStatus(),
+                order.getTotal(),
+                order.getCreatedAt(),
+                items
+        );
     }
 }
