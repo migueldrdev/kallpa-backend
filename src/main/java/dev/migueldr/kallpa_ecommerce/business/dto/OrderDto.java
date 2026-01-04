@@ -1,17 +1,25 @@
 package dev.migueldr.kallpa_ecommerce.business.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+// Este DTO sirve para MOSTRAR la orden en "Mis Pedidos"
 public record OrderDto(
-    String customerName,
-    String email,
-    String status,
-    java.math.BigDecimal totalAmount,
-    java.time.LocalDateTime createdAt,
-    java.util.List<OrderItemDto> items
+        UUID id,
+        LocalDateTime createdAt,
+        String status,
+        BigDecimal total,
+        String contactEmail, // El email que escribió en el checkout
+        List<OrderItemResponseDto> items
 ) {
-    public record OrderItemDto(
-        java.util.UUID productId,
-        String productName,
-        Integer quantity,
-        java.math.BigDecimal price
+    public record OrderItemResponseDto(
+            UUID productId,
+            String productName,
+            String productImageUrl,
+            Integer quantity,
+            BigDecimal price,
+            BigDecimal subtotal
     ) {}
 }

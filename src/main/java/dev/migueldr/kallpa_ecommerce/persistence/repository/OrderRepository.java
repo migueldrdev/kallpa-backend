@@ -9,6 +9,9 @@ import java.util.UUID;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, UUID> {
+    //Buscar por el ID del usuario
+    List<OrderEntity> findByUserIdOrderByCreatedAtDesc(UUID userId);
+
     // Buscar por email ordenado por fecha descendente
     List<OrderEntity> findByEmailOrderByCreatedAtDesc(String email);
 

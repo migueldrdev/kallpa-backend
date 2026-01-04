@@ -5,8 +5,10 @@ import dev.migueldr.kallpa_ecommerce.business.dto.OrderDto;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.OrderEntity;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.OrderItemEntity;
 import dev.migueldr.kallpa_ecommerce.persistence.entity.ProductEntity;
+import dev.migueldr.kallpa_ecommerce.persistence.entity.UserEntity;
 import dev.migueldr.kallpa_ecommerce.persistence.repository.OrderRepository;
 import dev.migueldr.kallpa_ecommerce.persistence.repository.ProductRepository;
+import dev.migueldr.kallpa_ecommerce.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     @Transactional // <--- LA CLAVE: Todo ocurre en una sola transacción atómica
     public UUID createOrder(CreateOrderDto input) {
@@ -33,6 +36,13 @@ public class OrderService {
         order.setCustomerName(input.customerName());
         order.setEmail(input.email());
         order.setStatus("PENDING"); // Estado inicial
+
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if (!"anonymousUser".equals(currentUserEmail)) {
+            userRepository.findByEmail(currentUserEmail)
+                    .ifPresent(order::setUser); // ¡Aquí ocurre la magia! FK user_id
+        }
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 
@@ -76,34 +86,38 @@ public class OrderService {
         return savedOrder.getId();
     }
 
+    // Método para obtener "Mis Pedidos" mapeado al DTO completo
     public List<OrderDto> getMyOrders() {
-        // 1. Obtener el email del usuario logueado desde el token
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // 2. Buscar sus órdenes
-        List<OrderEntity> orders = orderRepository.findByEmailOrderByCreatedAtDesc(email);
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado en contexto"));
 
-        // 3. Mapear a DTOs
-        return orders.stream()
-                .map(this::mapToOrderDto)
-                .toList();
+        // Buscamos por ID de usuario (Seguro)
+        List<OrderEntity> entities = orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+
+        // Convertimos Entidad -> DTO
+        return entities.stream().map(this::mapToDto).toList();
     }
 
     // Método auxiliar para mapear OrderEntity a OrderDto
-    private OrderDto mapToOrderDto(OrderEntity order) {
-        List<OrderDto.OrderItemDto> items = order.getItems().stream()
-                .map(item -> new OrderDto.OrderItemDto(
+    private OrderDto mapToDto(OrderEntity entity) {
+        List<OrderDto.OrderItemResponseDto> items = entity.getItems().stream()
+                .map(item -> new OrderDto.OrderItemResponseDto(
                         item.getProduct().getId(),
                         item.getProduct().getName(),
+                        item.getProduct().getImageUrl(),
                         item.getQuantity(),
-                        item.getPrice()
+                        item.getPrice(),
+                        item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
                 )).toList();
+
         return new OrderDto(
-                order.getCustomerName(),
-                order.getEmail(),
-                order.getStatus(),
-                order.getTotal(),
-                order.getCreatedAt(),
+                entity.getId(),
+                entity.getCreatedAt(),
+                entity.getStatus(),
+                entity.getTotal(),
+                entity.getEmail(),
                 items
         );
     }
